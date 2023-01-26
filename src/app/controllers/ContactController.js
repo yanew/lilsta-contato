@@ -1,11 +1,23 @@
+const ContactRepository = require("../repositories/ContactRepository");
+
 class ContactController{
 
-	index(request, response){
-		response.send("Yane ContactController");
+	async index(request, response){
+		const contacts = await ContactRepository.findAll();
+
+		response.json(contacts);
 	}
 
-	show(){
+	async show(request, response){
+		const { id } = request.params;
 
+		const contact = await ContactRepository.findById(id);
+
+		if(!contact){
+			return response.status(404).json({error: "User not found!"});
+		}
+
+		return response.json(contact);
 	}
 
 	store(){
@@ -16,8 +28,17 @@ class ContactController{
 
 	}
 
-	delete(){
+	async delete(request, response){
+		const { id } = request.params;
 
+		const contact = await ContactRepository.findById(id);
+
+		if(!contact){
+			return response.status(404).json({error: "User not found!"});
+		}
+
+		await ContactRepository.delete(id);
+		response.sendStatus(204);
 	}
 
 }
